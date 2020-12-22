@@ -18,7 +18,7 @@ app.use(cors);
 app.use(bodyParser.json());
 //use to test
 app.use((req, res, next) => {
-  console.log('Middleware check: should have parsed: ');
+  console.log('Middleware check: should have parsed body: ');
   console.log(req.body);
 })
 
