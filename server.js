@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const morgan = require('morgan');
 
 module.exports = app;
 
@@ -11,8 +11,11 @@ module.exports = app;
 */
 const PORT = process.env.PORT || 4001;
 
+//Logging
+app.use(morgan('tiny'));
+
 // Add middleware for handling CORS requests from index.html
-app.use(cors);
+app.use(cors());
 
 // Add middware for parsing request bodies here:
 app.use(bodyParser.json());
