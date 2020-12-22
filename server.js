@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+
 
 module.exports = app;
 
@@ -12,7 +14,12 @@ const PORT = process.env.PORT || 4001;
 
 
 // Add middware for parsing request bodies here:
-
+app.use(bodyParser.json());
+//use to test
+app.use((req, res, next) => {
+  console.log('Middleware check: should have parsed: ');
+  console.log(req.body);
+})
 
 // Mount your existing apiRouter below at the '/api' path.
 const apiRouter = require('./server/api');
