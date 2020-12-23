@@ -7,12 +7,17 @@ minionsRouter.use(morgan('tiny'));
 //Required Routes
 
 const BASE = '/minions';
+const DB_MODEL = 'minions';
 
 // GET /api/minions to get an array of all minions.
 minionsRouter.get('/', (req, res, next) => {
     console.log('Get all minions');
-    let minions = db.getAllFromDatabase('minions');
+    let minions = db.getAllFromDatabase(DB_MODEL);
     console.log(minions);
+
+    if(!minions){
+        res.status(404).send();
+    }
 
     //Send response
     res.status(200).send(minions);
@@ -27,10 +32,10 @@ minionsRouter.post('/', (req, res, next) => {
     console.log(req.body);
     
     //Add
-    db.addToDatabase('minions', req.body);
+    db.addToDatabase(DB_MODEL, req.body);
 
     //Send response
-    res.status(201).send()
+    res.status(201).send();
 });
 
 
@@ -45,7 +50,7 @@ minionsRouter.get('/:minionId', (req, res, next) => {
     //Validate
 
     //get from database
-    let minion = db.getFromDatabaseById('minions', req.params.id);
+    let minion = db.getFromDatabaseById(DB_MODEL, req.params.id);
     if(!minion){
         res.status(404).send();
     }
@@ -61,7 +66,7 @@ minionsRouter.put('/:minionId', (req, res, next) => {
     //get instance
     let minion = db.getFromDatabaseById('minions, req.params.id');
     //update instance
-    if(!db.updateInstanceInDatabase('minions', minion)){
+    if(!db.updateInstanceInDatabase(DB_MODEL, minion)){
         //Unable to find in database
         res.status(404).send();
     }
@@ -75,7 +80,7 @@ minionsRouter.put('/:minionId', (req, res, next) => {
 minionsRouter.delete('/:minionId', (req, res, next) => {
     console.log('Delete specific minion, id: '+req.params.id);
     
-    if(!db.deleteFromDatabasebyId('minions', req.params.id)){
+    if(!db.deleteFromDatabasebyId(DB_MODEL, req.params.id)){
         //Unable to find in database
         res.status(404).send();
     }
