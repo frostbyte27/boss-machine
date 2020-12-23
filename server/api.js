@@ -12,15 +12,16 @@ apiRouter.use(morgan('tiny'));
 
 //Debugging
 apiRouter.use('/', (req, res, next) =>{
-    console.log('MINIONS: '+MINIONS);
-    console.log('MEETINGS: '+MEETINGS);
-    console.log('IDEAS: '+IDEAS);
+    // console.log('MINIONS: '+MINIONS);
+    // console.log('MEETINGS: '+MEETINGS);
+    // console.log('IDEAS: '+IDEAS);
+    next();
 })
 
 //Required Routes
 
 //  /api/minions
-apiRouter.use('/minions', minionsRouter);
+apiRouter.use(MINIONS, minionsRouter);
 
 // GET /api/minions to get an array of all minions.
 // POST /api/minions to create a new minion and save it to the database.
@@ -30,7 +31,7 @@ apiRouter.use('/minions', minionsRouter);
 
 
 //  /api/ideas
-apiRouter.use('/ideas', ideasRouter);
+apiRouter.use(IDEAS, ideasRouter);
 
 // GET /api/ideas to get an array of all ideas.
 // POST /api/ideas to create a new idea and save it to the database.
@@ -40,7 +41,7 @@ apiRouter.use('/ideas', ideasRouter);
 
 
 //  /api/meetings
-apiRouter.use('/meetings', meetingsRouter);
+apiRouter.use(MEETINGS, meetingsRouter);
 
 // GET /api/meetings to get an array of all meetings.
 // POST /api/meetings to create a new meeting and save it to the database.
