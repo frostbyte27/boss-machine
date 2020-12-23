@@ -2,13 +2,20 @@ const express = require('express');
 const morgan = require('morgan');
 
 //Import sub-routers
-const {MINIONS, minionsRouter} = require('./minionsRouter.js');
-const {MEETINGS, meetingsRouter} = require('./meetingsRouter.js');
-const {IDEAS, ideasRouter} = require('./ideasRouter.js');
+const {BASE: MINIONS, minionsRouter} = require('./minionsRouter.js');
+const {BASE: MEETINGS, meetingsRouter} = require('./meetingsRouter.js');
+const {BASE: IDEAS, ideasRouter} = require('./ideasRouter.js');
 
 const apiRouter = express.Router();
 apiRouter.use(morgan('tiny'));
 
+
+//Debugging
+apiRouter.use('/', (req, res, next) =>{
+    console.log('MINIONS: '+MINIONS);
+    console.log('MEETINGS: '+MEETINGS);
+    console.log('IDEAS: '+IDEAS);
+})
 
 //Required Routes
 
