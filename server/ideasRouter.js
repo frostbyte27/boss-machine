@@ -11,9 +11,9 @@ const DB_MODEL = 'ideas';
 
 // GET /api/ideas to get an array of all ideas.
 ideasRouter.get('/', (req, res, next) => {
-    console.log('Get all ideas');
+    // console.log('Get all ideas');
     let ideas = db.getAllFromDatabase(DB_MODEL);
-    console.log(ideas);
+    // console.log(ideas);
     if(!ideas){
         res.status(404).send();
     }
@@ -23,16 +23,19 @@ ideasRouter.get('/', (req, res, next) => {
 
 // POST /api/ideas to create a new idea and save it to the database.
 ideasRouter.post('/', (req, res, next) => {
-    console.log('Create an idea');
-
-    //TODO: Validate
-    console.log(req.body);
+    // console.log('Create an idea');
+    // console.log(req.body);
     
-    //Add
-    db.addToDatabase(DB_MODEL, req.body);
+    //Add new instance - performs validation
+    let updatedIdea = db.addToDatabase(DB_MODEL, req.body);
+    if(!updatedIdea){
+        //Unable to find in database
+        res.status(404).send();
+        return;
+    }
 
-    //Send response
-    res.status(201).send();
+    //Send response - Success response
+    res.status(201).send(updatedIdea);
 });
 
 
@@ -40,14 +43,15 @@ ideasRouter.post('/', (req, res, next) => {
 //-----------Using Paremeter ideadId --------
 
 ideasRouter.param('ideaId', (req, res, next, ideaId) => {
-    console.log('Attempting to access idea with id: '+ideaId);
+    //console.log('Attempting to access idea with id: '+ideaId);
     let idea = db.getFromDatabaseById(DB_MODEL, ideaId);
     if(!idea){
+        //console.log('Idea(id= '+ideaId+") not found in database");
         res.status(404).send();
         return;
     }
     req.idea = idea;
-    console.log('Accessed Idea: '+req.idea);
+    // console.log('Accessed Idea: '+req.idea);
     next();
 });
 
@@ -61,7 +65,7 @@ ideasRouter.get('/:ideaId', (req, res, next) => {
 
 // PUT /api/ideas/:ideaId to update a single idea by id.
 ideasRouter.put('/:ideaId', (req, res, next) => {
-    console.log('Edit idea, id: '+req.idea.id);
+    //console.log('Edit idea, id: '+req.idea.id);
 
     //update instance
     let newIdea = req.body;
@@ -76,17 +80,20 @@ ideasRouter.put('/:ideaId', (req, res, next) => {
     res.status(201).send(updatedIdea);
 });
 
+
 // DELETE /api/ideas/:ideaId to delete a single idea by id.
 ideasRouter.delete('/:ideaId', (req, res, next) => {
-    console.log('Delete idea, id: '+req.params.ideaId);
+    //console.log('Delete idea, id: '+req.idea.id);
      
-    if(!db.deleteFromDatabasebyId(DB_MODEL, req.params.id)){
+    if(!db.deleteFromDatabasebyId(DB_MODEL, req.idea.id)){
         //Unable to find in database
+        //console.log('\t\tNot found');
         res.status(404).send();
     }
 
     //Send response - Success response
-    res.status(200).send();
+    //console.log('Found and deleted idea, id: '+req.idea.id);
+    res.status(204).send();
 });
 
 module.exports = { BASE, ideasRouter};
