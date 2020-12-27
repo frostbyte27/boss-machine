@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const checkMillionDollarIdea = require('./checkMillionDollarIdea');
 const db = require('./db');
 const ideasRouter = express.Router();
 //ideasRouter.use(morgan('tiny'));
@@ -8,6 +9,9 @@ const ideasRouter = express.Router();
 
 const BASE = '/ideas';
 const DB_MODEL = 'ideas';
+
+
+
 
 // GET /api/ideas to get an array of all ideas.
 ideasRouter.get('/', (req, res, next) => {
@@ -21,6 +25,9 @@ ideasRouter.get('/', (req, res, next) => {
     res.status(200).send(ideas);
 });
 
+
+//Add middleware validation - runs on each POST or PUT route
+ideasRouter.post('/', checkMillionDollarIdea);
 // POST /api/ideas to create a new idea and save it to the database.
 ideasRouter.post('/', (req, res, next) => {
     // console.log('Create an idea');
@@ -63,6 +70,8 @@ ideasRouter.get('/:ideaId', (req, res, next) => {
     res.status(200).send(req.idea);
 });
 
+//Add middleware validation - runs on each POST or PUT route
+ideasRouter.put('/:ideaId', checkMillionDollarIdea);
 // PUT /api/ideas/:ideaId to update a single idea by id.
 ideasRouter.put('/:ideaId', (req, res, next) => {
     //console.log('Edit idea, id: '+req.idea.id);
