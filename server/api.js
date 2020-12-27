@@ -7,7 +7,7 @@ const {BASE: MEETINGS, meetingsRouter} = require('./meetingsRouter.js');
 const {BASE: IDEAS, ideasRouter} = require('./ideasRouter.js');
 
 const apiRouter = express.Router();
-apiRouter.use(morgan('tiny'));
+//apiRouter.use(morgan('tiny'));
 
 
 //Debugging

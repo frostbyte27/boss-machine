@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const db = require('./db');
 const minionsRouter = express.Router();
-minionsRouter.use(morgan('tiny'));
+//minionsRouter.use(morgan('tiny'));
 
 //Required Routes
 
@@ -13,8 +13,8 @@ const DB_MODEL = 'minions';
 minionsRouter.get('/', (req, res, next) => {
     console.log('Get all minions');
     let minions = db.getAllFromDatabase(DB_MODEL);
-    console.log(minions);
-
+    //console.log(minions);
+    //Minions data model not found
     if(!minions){
         res.status(404).send();
     }
@@ -30,63 +30,78 @@ minionsRouter.post('/', (req, res, next) => {
 
     //TODO: Validate
     console.log(req.body);
+    // let newMinion = req.body;
+    // if(!newMinion.name || !newMinion.salary || !newMinion.title || s){
+    //     console.log('Failed to add new minion');
+    //     res.status(400).send();
+    // }
     
     //Add
-    db.addToDatabase(DB_MODEL, req.body);
-
-    //Send response
+    if(!db.addToDatabase(DB_MODEL, req.body)){
+        console.log('Failed to add new minion');
+        res.status(400).send();
+    }
+    console.log('Successfully added new minion');
+    //Success
     res.status(201).send();
 });
 
 
 //----------Using minionID parameter --------------
 
-//Middleware validation
+//Middleware for getting minion from id
+minionsRouter.param('minionId', (req, res, next, id) => {
+    //attempt to get minion - also validates ID
+
+    //get from database
+    let minion = db.getFromDatabaseById(DB_MODEL, id);
+    if(!minion){
+        console.log('Failed to find minion with id: '+id);
+        res.status(404).send();
+        return;
+    }
+    //Success!
+    req.minion = minion;
+    next();
+})
 
 // GET /api/minions/:minionId to get a single minion by id.
 minionsRouter.get('/:minionId', (req, res, next) => {
-    console.log('Get specific minion, id: '+req.params.id);
-
-    //Validate
-
-    //get from database
-    let minion = db.getFromDatabaseById(DB_MODEL, req.params.id);
-    if(!minion){
-        res.status(404).send();
-    }
-
+    console.log('Get specific minion, id: '+req.minion.id);
+    console.log(req.minion);
     //send back
-    res.status()
+    res.status(200).send(req.minion);
 });
 
 
 // PUT /api/minions/:minionId to update a single minion by id.
 minionsRouter.put('/:minionId', (req, res, next) => {
-    console.log('Edit specific minion, id: '+req.params.id);
-    //get instance
-    let minion = db.getFromDatabaseById('minions, req.params.id');
+    console.log('Edit specific minion, id: '+req.minion.id);
+ 
     //update instance
-    if(!db.updateInstanceInDatabase(DB_MODEL, minion)){
+    let updatedMinion = db.updateInstanceInDatabase(DB_MODEL, req.body);
+    if(!updatedMinion){
         //Unable to find in database
         res.status(404).send();
     }
-
+    console.log('Updated Minion: ');
+    console.log(updatedMinion);
     //Send response - Success response
-    res.status(201).send()
+    res.status(201).send(updatedMinion);
 
 });
 
 // DELETE /api/minions/:minionId to delete a single minion by id.
 minionsRouter.delete('/:minionId', (req, res, next) => {
-    console.log('Delete specific minion, id: '+req.params.id);
+    console.log('Delete specific minion, id: '+req.minion.id);
     
-    if(!db.deleteFromDatabasebyId(DB_MODEL, req.params.id)){
+    if(!db.deleteFromDatabasebyId(DB_MODEL, req.minion.id)){
         //Unable to find in database
         res.status(404).send();
     }
 
     //Send response - Success response
-    res.status(200).send();
+    res.status(204).send();
 });
 
 module.exports = { BASE, minionsRouter};

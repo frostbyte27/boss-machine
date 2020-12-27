@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const db = require('./db');
 const meetingsRouter = express.Router();
-meetingsRouter.use(morgan('tiny'));
+//meetingsRouter.use(morgan('tiny'));
 
 //Required Routes
 
@@ -40,9 +40,9 @@ meetingsRouter.post('/', (req, res, next) => {
 meetingsRouter.delete('/', (req, res, next) => {
     console.log('Delete all meetings');
 
-    if(!db.deleteAllFromDatabase(DB_MODEL).length()){
+    if(db.deleteAllFromDatabase(DB_MODEL).length > 0){
         //No model with specified name found
-        res.status(404).send();
+        res.status(400).send();
     }
     //Successfully removed entries
     res.status(201).send();

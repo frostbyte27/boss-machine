@@ -1,7 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
+const db = require('./db');
 const ideasRouter = express.Router();
-ideasRouter.use(morgan('tiny'));
+//ideasRouter.use(morgan('tiny'));
 
 //Required Routes
 
@@ -38,36 +39,41 @@ ideasRouter.post('/', (req, res, next) => {
 
 //-----------Using Paremeter ideadId --------
 
+ideasRouter.param('ideaId', (req, res, next, ideaId) => {
+    console.log('Attempting to access idea with id: '+ideaId);
+    let idea = db.getFromDatabaseById(DB_MODEL, ideaId);
+    if(!idea){
+        res.status(404).send();
+        return;
+    }
+    req.idea = idea;
+    console.log('Accessed Idea: '+req.idea);
+    next();
+});
+
 // GET /api/ideas/:ideaId to get a single idea by id.
 ideasRouter.get('/:ideaId', (req, res, next) => {
-    console.log('Get idea, id: '+req.params.ideaId);
-
-    //Validate
-
-    //get from database
-    let minion = db.getFromDatabaseById(DB_MODEL, req.params.id);
-    if(!minion){
-        res.status(404).send();
-    }
-
+    //console.log('Get idea, id: '+req.params.ideaId);
+    
     //send back
-    res.status()
+    res.status(200).send(req.idea);
 });
 
 // PUT /api/ideas/:ideaId to update a single idea by id.
 ideasRouter.put('/:ideaId', (req, res, next) => {
-    console.log('Edit idea, id: '+req.params.ideaId);
+    console.log('Edit idea, id: '+req.idea.id);
 
-    //get instance
-    let idea = db.getFromDatabaseById('minions, req.params.id');
     //update instance
-    if(!db.updateInstanceInDatabase(DB_MODEL, idea)){
+    let newIdea = req.body;
+    newIdea.id = req.idea.id;
+    let updatedIdea = db.updateInstanceInDatabase(DB_MODEL, newIdea);
+    if(!updatedIdea){
         //Unable to find in database
         res.status(404).send();
     }
 
     //Send response - Success response
-    res.status(201).send()
+    res.status(201).send(updatedIdea);
 });
 
 // DELETE /api/ideas/:ideaId to delete a single idea by id.
