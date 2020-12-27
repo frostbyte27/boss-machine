@@ -30,20 +30,17 @@ minionsRouter.post('/', (req, res, next) => {
 
     //TODO: Validate
     console.log(req.body);
-    // let newMinion = req.body;
-    // if(!newMinion.name || !newMinion.salary || !newMinion.title || s){
-    //     console.log('Failed to add new minion');
-    //     res.status(400).send();
-    // }
+ 
     
     //Add
-    if(!db.addToDatabase(DB_MODEL, req.body)){
+    let newMinion = db.addToDatabase(DB_MODEL, req.body);
+    if(!newMinion){
         console.log('Failed to add new minion');
         res.status(400).send();
     }
     console.log('Successfully added new minion');
     //Success
-    res.status(201).send();
+    res.status(201).send(newMinion);
 });
 
 
