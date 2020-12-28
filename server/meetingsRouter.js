@@ -27,12 +27,16 @@ meetingsRouter.get('/', (req, res, next) => {
 meetingsRouter.post('/', (req, res, next) => {
     console.log('Create a meeting');
 
-    //TODO: Validate
-    console.log(req.body);
     //Add
-    db.addToDatabase(DB_MODEL, req.body);
-    //Send response
-    res.status(201).send();
+    let newMeeting = db.addToDatabase(DB_MODEL, db.createMeeting());
+    if(newMeeting){
+        //Send response
+        res.status(201).send(newMeeting);
+        return;
+    }
+    else{
+        res.status(400).send();
+    }
 
 });
 
@@ -45,7 +49,7 @@ meetingsRouter.delete('/', (req, res, next) => {
         res.status(400).send();
     }
     //Successfully removed entries
-    res.status(201).send();
+    res.status(204).send();
 
 });
 
